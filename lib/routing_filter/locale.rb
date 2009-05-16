@@ -9,6 +9,9 @@ module RoutingFilter
     @@case_insensitive_locales = false
     cattr_accessor :case_insensitive_locales
 
+    @@strip_relative_url_root = true
+    cattr_accessor :strip_relative_url_root
+
     class << self
       def include_default_locale?
         @@include_default_locale
@@ -33,6 +36,12 @@ module RoutingFilter
 
     def around_recognize(path, env, &block)
       locale = extract_locale!(path)                 # remove the locale from the beginning of the path
+
+      if self.class.strip_relative_url_root
+        # Remove relative_url_root from path if it's there.
+        path.sub! %r{^#{ActionController::Base.relative_url_root}/}, '/'
+      end
+
       returning yield do |params|                    # invoke the given block (calls more filters and finally routing)
         params[:locale] = locale if locale           # set recognized locale to the resulting params hash
       end

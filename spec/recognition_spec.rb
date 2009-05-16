@@ -82,3 +82,30 @@ describe 'RoutingFilter', 'url recognition' do
     lambda { @set.recognize_path('/en-us/sections/1/', {}) }.should raise_error(ActionController::RoutingError)
   end
 end
+
+describe 'RoutingFilter', 'url recognition with relative_url_root set' do
+  include RoutingFilterHelpers
+
+  before :each do
+    @orig_relative_url_root = ActionController::Base.relative_url_root
+    ActionController::Base.relative_url_root = '/anime'
+
+    setup_environment :locale
+  end
+
+  after :each do
+    ActionController::Base.relative_url_root = @orig_relative_url_root
+  end
+
+  it 'recognizes the path /anime/sections/1/articles/1' do
+    should_recognize_path '/anime/sections/1/articles/1', @article_params
+  end
+
+  it 'recognizes the path /sections/1/articles/1' do
+    should_recognize_path '/sections/1/articles/1', @article_params
+  end
+
+  it 'recognizes the path /en-US/anime/sections/1/articles/1' do
+    should_recognize_path '/en-US/anime/sections/1/articles/1', @article_params.update(:locale => 'en-US')
+  end
+end
