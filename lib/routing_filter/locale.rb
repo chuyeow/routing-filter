@@ -6,6 +6,9 @@ module RoutingFilter
     @@include_default_locale = true
     cattr_writer :include_default_locale
 
+    @@case_insensitive_locales = false
+    cattr_accessor :case_insensitive_locales
+
     class << self
       def include_default_locale?
         @@include_default_locale
@@ -20,7 +23,11 @@ module RoutingFilter
       end
 
       def locales_pattern
-        @@locales_pattern ||= %r(^/(#{self.locales.map { |l| Regexp.escape(l.to_s) }.join('|')})(?=/|$))
+        @@locales_pattern = if @@case_insensitive_locales
+          %r{^/(#{self.locales.map { |l| Regexp.escape(l.to_s) }.join('|')})(?=/|$)}i
+        else
+          %r{^/(#{self.locales.map { |l| Regexp.escape(l.to_s) }.join('|')})(?=/|$)}
+        end
       end
     end
 
