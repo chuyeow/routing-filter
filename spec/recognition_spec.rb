@@ -69,7 +69,7 @@ describe 'RoutingFilter', 'url recognition' do
     should_recognize_path '/en-US/sections/1/articles/1', @article_params.update(:locale => 'en-US')
   end
 
-  it 'recognizes the path /en-us/sections/1 and sets a :locale param' do
+  it 'recognizes the path /en-us/sections/1/articles/1 and sets a :locale param' do
     orig_value = RoutingFilter::Locale.case_insensitive_locales
     RoutingFilter::Locale.case_insensitive_locales = true
 
