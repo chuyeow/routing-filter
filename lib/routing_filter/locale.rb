@@ -39,7 +39,7 @@ module RoutingFilter
 
       if self.class.strip_relative_url_root
         # Remove relative_url_root from path if it's there.
-        path.sub! %r{^#{ActionController::Base.relative_url_root}/}, '/'
+        path.sub! %r{^#{ActionController::Base.relative_url_root}}, ''
       end
 
       returning yield do |params|                    # invoke the given block (calls more filters and finally routing)
