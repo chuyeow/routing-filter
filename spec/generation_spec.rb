@@ -378,10 +378,11 @@ describe 'RoutingFilter', 'url generation' do
 
         # Note: the extra relative_url_root after the locale is intentional.
         # When there's a relative_url_root set, Rails' actually prepends it _after_ the route
-        # has been generated. This means we can't manipulate it with the scope of RoutingFilter.
+        # has been generated. This means we can't manipulate it within the scope of RoutingFilter.
         #
         # To have URLs generate properly without the repeated relative_url_root, I define this in
         # my ApplicationController:
+        #
         #   def default_url_options(options)
         #     { :skip_relative_url_root => true }
         #   end
