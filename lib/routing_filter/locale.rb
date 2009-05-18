@@ -80,7 +80,13 @@ module RoutingFilter
       end
 
       def prepend_locale!(url, locale)
-        url.sub!(%r(^(http.?://[^/]*)?(.*))) { "#{$1}/#{locale}#{$2}" }
+        if self.class.strip_relative_url_root
+          url.sub!(%r{(^http.?://[^/]*)?(.*)}) {
+            "#{$1}/#{locale}#{ActionController::Base.relative_url_root}#{$2}"
+          }
+        else
+          url.sub!(%r{^(http.?://[^/]*)?(.*)}) { "#{$1}/#{locale}#{$2}" }
+        end
       end
   end
 end

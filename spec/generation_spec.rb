@@ -363,5 +363,29 @@ describe 'RoutingFilter', 'url generation' do
         url_for(params).should == 'http://test.host/sections/1/articles/1'
       end
     end
+
+    describe "with relative_url_root set" do
+
+      before :each do
+        @orig_relative_url_root = ActionController::Base.relative_url_root
+        ActionController::Base.relative_url_root = '/anime'
+
+        setup_environment :locale
+      end
+
+      it "should prepend the locale before the relative_url_root" do
+        section_path(:id => 1, :locale => :de).should == '/anime/de/anime/sections/1'
+
+        # Note: the extra relative_url_root after the locale is intentional.
+        # When there's a relative_url_root set, Rails' actually prepends it _after_ the route
+        # has been generated. This means we can't manipulate it with the scope of RoutingFilter.
+        #
+        # To have URLs generate properly without the repeated relative_url_root, I define this in
+        # my ApplicationController:
+        #   def default_url_options(options)
+        #     { :skip_relative_url_root => true }
+        #   end
+      end
+    end
   end
 end
