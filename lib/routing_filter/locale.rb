@@ -42,9 +42,10 @@ module RoutingFilter
         path.sub! %r{^#{ActionController::Base.relative_url_root}}, ''
       end
 
-      returning yield do |params|                    # invoke the given block (calls more filters and finally routing)
-        params[:locale] = locale if locale           # set recognized locale to the resulting params hash
-      end
+      params = yield # invoke the given block (calls more filters and finally routing)
+      params[:locale] = locale if locale # set recognized locale to the resulting params hash
+
+      params
     end
 
     def around_generate(*args, &block)
@@ -52,12 +53,14 @@ module RoutingFilter
       locale = I18n.locale if locale.nil?            # default to I18n.locale when locale is nil (could also be false)
       locale = nil unless valid_locale?(locale)      # reset to no locale when locale is not valid
 
-      returning yield do |result|
-        if locale && prepend_locale?(locale)
-          url = result.is_a?(Array) ? result.first : result
-          prepend_locale!(url, locale)
-        end
+      result = yield
+
+      if locale && prepend_locale?(locale)
+        url = result.is_a?(Array) ? result.first : result
+        prepend_locale!(url, locale)
       end
+
+      result
     end
 
     protected
